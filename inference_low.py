@@ -136,8 +136,8 @@ def main(_):
     # Build model using Keras
     classifier = model_2.MODEL(is_training=False)
     # Dummy inputs to build the model
-    dummy_input_nlcd = tf.zeros((1, 33))  # Replace with actual input shape
-    dummy_input_label = tf.zeros((1, 404))   # Replace with actual label shape
+    dummy_input_nlcd = tf.zeros((1, 34))  # Replace with actual input shape
+    dummy_input_label = tf.zeros((1, 332))   # Replace with actual label shape
     _ = classifier((dummy_input_nlcd, dummy_input_label), is_training=False)
 
     # Restore model weights (must be .weights.h5 or compatible)
@@ -153,17 +153,17 @@ def main(_):
     np.save(os.path.join(FLAGS.visual_dir, f"feature_emb_{FLAGS.mon}"), feature_embedding)
 
     # Read species names
-    file_path = "./data/ebird_occurance_habitat.csv"
+    file_path = "./data/ebird_occurance_habitat_10_withyear.csv"
     try:
         with open(file_path, "r") as f:
-            spe_name = f.readline().strip().split(",")[37:]
-        assert len(spe_name) == 404
+            spe_name = f.readline().strip().split(",")[36:]
+        assert len(spe_name) == 332
         print(spe_name[:10])  # Check first 10 species for sanity
     except FileNotFoundError:
         print(f"Error: {file_path} not found.")
         return
     except AssertionError:
-        print(f"Error: The species list doesn't have 404 species.")
+        print(f"Error: The species list doesn't have 332 species.")
         return
     except Exception as e:
         print(f"Unexpected error: {e}")
@@ -173,33 +173,35 @@ def main(_):
     all_indiv_prob, all_label, prob_res, loc_res = test_step(classifier, data, test_idx)
 
     # Save the prediction results to CSV
-    with open("./predictions.csv", "w") as f:
+    os.makedirs("./results/low/", exist_ok=True)  # Ensure output directory exists
+    with open("./results/low/predictions_case_%d_month_%d.csv" % (FLAGS.case, FLAGS.mon), "w") as f:
         f.write("LON,LAT,")
         for iii, item in enumerate(spe_name):
             f.write(f"{item},")
         f.write("\n")
         for loc, prob in zip(loc_res, prob_res):
-            f.write(f"{loc[0]},{loc[1]},")
+            f.write(f"{loc[1]},{loc[0]},")
             f.write(",".join([str(p) for p in prob]) + "\n")
 
-    # Perform analysis for each species and collect summary
-    summary = []
-    for i in range(FLAGS.r_dim):
-        sp_indiv_prob = all_indiv_prob[:, i].reshape(all_indiv_prob.shape[0], 1)
-        sp_input_label = all_label[:, i].reshape(all_label.shape[0], 1)
-
-        res = analysis(i, sp_indiv_prob, sp_input_label, False)
-        summary.append(res)
+    # # Perform analysis for each species and collect summary
+    # summary = []
+    # for i in range(FLAGS.r_dim):
+    #     sp_indiv_prob = all_indiv_prob[:, i].reshape(all_indiv_prob.shape[0], 1)
+    #     sp_input_label = all_label[:, i].reshape(all_label.shape[0], 1)
+    #     print(len(set(sp_input_label.flatten())))
+    #     res = analysis(i, sp_indiv_prob, sp_input_label, False)
+    #     print(res)
+    #     summary.append(res)
         
-    #summary = [np.pad(s, (0, 404 - len(s))) if len(s) < 404 else s[:404] for s in summary]
-    # Example of making all tuples homogeneous, assuming 5 elements in each tuple
+    # #summary = [np.pad(s, (0, 404 - len(s))) if len(s) < 404 else s[:404] for s in summary]
+    # # Example of making all tuples homogeneous, assuming 5 elements in each tuple
   
-    summary = [x for x in summary if x is not None]
-    summary = np.asarray(summary)
+    # summary = [x for x in summary if x is not None]
+    # summary = np.asarray(summary)
 
     
 
-    np.save("./data/summary_all", summary)  # Save the analysis result
+    # np.save("./data/summary_all", summary)  # Save the analysis result
     
 
 if __name__ == '__main__':

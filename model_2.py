@@ -24,8 +24,8 @@ from tensorflow import (
     random,
     linalg,
     math,
-    float32,
-    float32,
+    float32
+ 
 )
 
 
@@ -92,7 +92,7 @@ class MODEL(tf.keras.Model):
 
         # self.sigma = tf.matmul(self.r_sqrt_sigma, tf.transpose(self.r_sqrt_sigma))
         # self.sqrt_diag=1.0/tf.sqrt(tf.linalg.diag_part(self.sigma))
-        # self.covariance = self.sigma + tf.eye(self.r_dim)
+        #self.covariance = self.sigma + tf.eye(self.r_dim)
         # self.cov_diag = tf.linalg.diag_part(self.covariance)
 
         # Initialize constants
@@ -176,4 +176,4 @@ class MODEL(tf.keras.Model):
         # Compute the total loss
         total_loss = nll_loss + l2_loss
 
-        return indiv_prob, nll_loss, marginal_loss, l2_loss, total_loss
+        return indiv_prob, Eprob, nll_loss, marginal_loss, l2_loss, total_loss, covariance

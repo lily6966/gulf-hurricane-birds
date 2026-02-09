@@ -24,7 +24,7 @@ def train_step(hg, input_nlcd, input_label, optimizer, step, writer):
 
     with tf.GradientTape() as tape:
         # Forward pass with inputs
-        indiv_prob, nll_loss, marginal_loss, l2_loss, total_loss = hg(
+        indiv_prob, eprob, nll_loss, marginal_loss, l2_loss, total_loss, covariance = hg(
             [input_nlcd, input_label], is_training=True
         )
 
@@ -62,7 +62,7 @@ def validation_step(hg, data, valid_idx, writer, step):
         input_label = get_data.get_label(data, batch_indices)
 
         # Forward pass (no gradient calculation during validation)
-        indiv_prob, nll_loss, marginal_loss, l2_loss, total_loss = hg([input_nlcd, input_label], is_training=False)
+        indiv_prob, eprob, nll_loss, marginal_loss, l2_loss, total_loss, covariance = hg([input_nlcd, input_label], is_training=False)
 
         # Aggregate results
         all_nll_loss += nll_loss * len(batch_indices)
@@ -242,7 +242,9 @@ def main(_):
         if mean_nll_loss < best_loss:
             print(f"New best loss: {mean_nll_loss:.6f}, saving model...")
             best_loss = mean_nll_loss
+            best_iter = global_step.numpy()
             checkpoint.save(file_prefix=checkpoint_prefix)
+            hg.save_weights(os.path.join(checkpoint_dir, f"model-{best_iter}.weights.h5"))
             drop_count = 0
         else:
             drop_count += 1
@@ -254,9 +256,10 @@ def main(_):
 
     print('Training completed!')
     print(f'Best validation loss: {best_loss}')
+    print ('the best checkpoint is '+str(best_iter))
     ed_time = time.time()
-    print("Total running time:", ed_time - st_time)
-
+    print ("running time: ", ed_time - st_time)   
+    
     
 
 if __name__ == '__main__':

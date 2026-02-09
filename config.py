@@ -17,8 +17,8 @@ flags.DEFINE_string('test_idx', '../data/test_idx.npy','The path of testing data
 
 flags.DEFINE_integer('batch_size', 50, 'the number of data points in one minibatch') #128
 flags.DEFINE_integer('testing_size', 50, 'the number of data points in one testing or validation batch') #128
-#flags.DEFINE_integer('mon', 5, 'the number of data points in one testing or validation batch') #128
-#flags.DEFINE_integer('case', 128, 'the number of data points in one testing or validation batch') #128
+flags.DEFINE_integer('mon', 5, 'the number of data points in one testing or validation batch') #128
+flags.DEFINE_integer('case', 128, 'the number of data points in one testing or validation batch') #128
 flags.DEFINE_float('learning_rate', 0.001, 'initial learning rate')
 #tf.app.flags.DEFINE_float('pred_lr', 1, 'the learning rate for predictor')
 flags.DEFINE_integer('max_epoch', 10, 'max epoch to train')

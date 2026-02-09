@@ -1,8 +1,6 @@
 import os
 import pickle
 
-import os
-import pickle
 
 os.system("python3 get_model_number.py")
 
@@ -28,7 +26,7 @@ for cnt in range(1, 13):
             j = cnt  # j is fixed to current `cnt` value
             j_name = f"test_bird_{i}_{j}"
             command = (
-                "python3 test1.py --checkpoint_path ./data/small_model_mon%d/model_%d_%d/model-%d.weights.h5 --summary_dir ./summary_%d_%d --visual_dir ./vis_%d_%d --data_dir ./data/small_region/small_case%d_bird_%d.npy --test_idx ./data/small_region/small_case%d_bird_test_idx_%d.npy --r_dim 404 --r_max_dim 404 --mon %d --case %d | tee ./data/small_map_data_%d/%s" % (cnt, i, j, model_num[cur], i, j, i, j, i, j, i, j, j, i, cnt, j_name)
+                "python3 MDT_threshold.py --checkpoint_path ./data/small_model_mon%d/model_%d_%d/model-%d.weights.h5 --summary_dir ./summary_%d_%d --visual_dir ./vis_%d_%d --data_dir ./data/small_region/small_case%d_bird_%d.npy --test_idx ./data/small_region/small_case%d_bird_test_idx_%d.npy --r_dim 332 --r_max_dim 332 --mon %d --case %d | tee ./data/small_map_data_%d/%s" % (cnt, i, j, model_num[cur], i, j, i, j, i, j, i, j, j, i, cnt, j_name)
 
             )
             print (command)
